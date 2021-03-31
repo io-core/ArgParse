@@ -46,15 +46,16 @@ MODULE ArgParse;
 ---
 **ArgParse** finds the arguments to a command.
   end-procedure-description *)
-  PROCEDURE ArgParse*(VAR W:Texts.Writer, o: ARRAY OF CHAR);
+  PROCEDURE ArgParse*(VAR W:Texts.Writer; o: ARRAY OF CHAR);
     VAR beg, end, time: LONGINT;
       T: Texts.Text;
       S: Texts.Scanner;
+      e: SET;
   BEGIN
     Texts.OpenScanner(S, Oberon.Par.text, Oberon.Par.pos); Texts.Scan(S);
     IF S.class = Texts.Char THEN
       IF S.codepoint = ORD("@") THEN
-        Option(S,o); Oberon.GetSelection(T, beg, end, time);
+        e:=Option(S,o); Oberon.GetSelection(T, beg, end, time);
         IF time >= 0 THEN
 (*
           OXB.Init(ccWordsize);
@@ -65,7 +66,7 @@ MODULE ArgParse;
 *)
         END
       ELSIF S.codepoint = ORD("^") THEN
-        Option(S,o); Oberon.GetSelection(T, beg, end, time);
+        e:=Option(S,o); Oberon.GetSelection(T, beg, end, time);
         IF time >= 0 THEN
 (*
           Texts.OpenScanner(S, T, beg); Texts.Scan(S);
@@ -90,7 +91,7 @@ MODULE ArgParse;
       WHILE S.class = Texts.Name DO
         NEW(T); Texts.Open(T, S.s);
         IF T.len > 0 THEN
-          Option(S,o);
+          e:=Option(S,o);
 (*
           OXB.Init(ccWordsize);
           NEW(dummy); dummy.class := OXB.Var; dummy.type := OXB.intType;
@@ -108,4 +109,4 @@ MODULE ArgParse;
   END ArgParse;
 
 BEGIN 
-END Test.
+END ArgParse.
