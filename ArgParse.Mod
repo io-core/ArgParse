@@ -20,8 +20,15 @@ MODULE ArgParse;
   IMPORT Texts, Oberon;
 
   CONST 
+    optextlen = 32;
 
   TYPE 
+    Arg = POINTER TO ArgDesc;
+    ArgDesc = RECORD
+      next: Arg;
+      text: ARRAY optextlen OF CHAR;
+      opt: SET
+    END;
 
   VAR 
 
@@ -44,13 +51,12 @@ MODULE ArgParse;
 
   (* begin-procedure-description
 ---
-**ArgParse** finds the arguments to a command.
+**ArgParse** collects the arguments to a command.
   end-procedure-description *)
-  PROCEDURE ArgParse*(VAR W:Texts.Writer; o: ARRAY OF CHAR);
+  PROCEDURE ArgParse*(VAR W:Texts.Writer; o: ARRAY OF CHAR; VAR e: SET);
     VAR beg, end, time: LONGINT;
       T: Texts.Text;
       S: Texts.Scanner;
-      e: SET;
   BEGIN
     Texts.OpenScanner(S, Oberon.Par.text, Oberon.Par.pos); Texts.Scan(S);
     IF S.class = Texts.Char THEN
@@ -83,7 +89,7 @@ MODULE ArgParse;
 *)
         END
       ELSIF S.codepoint = ORD("-") THEN
-        IF S.codepoint = ORD("^") THEN  (* single dash argument *)
+        IF S.codepoint = ORD("-") THEN  (* single dash argument *)
         ELSE                            (* double dash argument *)
         END
       END
